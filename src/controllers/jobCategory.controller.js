@@ -1,0 +1,81 @@
+import JobCategoryService from "../services/jobCategory.service.js";
+
+class JobCategoryController {
+  constructor() {
+    this.jobCategoryService = new JobCategoryService();
+  }
+
+  create = async (req, res, next) => {
+    try {
+      const category = await this.jobCategoryService.createCategory(req.body);
+      return res
+        .status(201)
+        .json({ success: true, data: category, message: "Category created" });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  list = async (req, res, next) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const result = await this.jobCategoryService.listCategories(page, limit);
+      return res.json({
+        success: true,
+        data: result.data,
+        pagination: result.pagination,
+        message: "Categories fetched",
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  get = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const category = await this.jobCategoryService.getCategoryById(id);
+      return res.json({
+        success: true,
+        data: category,
+        message: "Category fetched",
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  update = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const updated = await this.jobCategoryService.updateCategory(
+        id,
+        req.body
+      );
+      return res.json({
+        success: true,
+        data: updated,
+        message: "Category updated",
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  delete = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      await this.jobCategoryService.deleteCategory(id);
+      return res.json({
+        success: true,
+        data: null,
+        message: "Category deleted",
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+}
+
+export default new JobCategoryController();
